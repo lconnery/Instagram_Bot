@@ -31,7 +31,7 @@ def start_flask_application():
 
 
 def start_content_retrieval():
-    print("Starting content retrieval...")
+    start_content()
 
 
 if __name__ == "__main__":
