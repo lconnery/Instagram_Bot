@@ -62,3 +62,17 @@ class Database(object):
             return caption_id
 
         return None
+
+    def get_content_source_id(self, content_source_username):
+        sql_file = open('./DatabaseScripts/Select/selectContentSourceID.sql',
+                        'r')
+        query = sql_file.read()
+        values = (content_source_username, )
+
+        query_result = self.execute_query(query, values)
+
+        if (query_result):
+            content_source_id = self.cursor.fetchone()[0]
+            return content_source_id
+
+        return None

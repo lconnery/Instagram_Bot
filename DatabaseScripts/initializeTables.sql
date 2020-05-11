@@ -1,3 +1,6 @@
+create extension
+if not exists "uuid-ossp";
+
 create table captions
 (
     caption_id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
