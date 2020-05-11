@@ -63,6 +63,19 @@ class Database(object):
 
         return None
 
+    def insert_new_hashtag(self, hashtag) -> str:
+        sql_file = open('./DatabaseScripts/insertNewHashtag.sql', 'r')
+        query = sql_file.read()
+        values = (hashtag, )
+
+        query_result = self.execute_query(query, values)
+
+        if (query_result):
+            hashtag_id = self.cursor.fetchone()[0]
+            return hashtag_id
+
+        return None
+
     def get_content_source_id(self, content_source_username):
         sql_file = open('./DatabaseScripts/Select/selectContentSourceID.sql',
                         'r')
