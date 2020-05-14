@@ -107,6 +107,7 @@ venv.bak/
 .vscode
 config
 .DS_Store
+PostStaging/*
 
 # Spyder project settings
 .spyderproject

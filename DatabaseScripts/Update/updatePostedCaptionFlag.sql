@@ -1,0 +1,1 @@
+UPDATE captions SET is_posted=TRUE WHERE caption_id=%s;

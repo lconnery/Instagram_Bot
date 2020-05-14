@@ -1,5 +1,12 @@
 import psycopg2 as pg
 import sys
+import os
+import glob
+
+# clear PostStaging folder for testing
+files_to_delete = glob.glob('./PostStaging/DailyContent/*')
+for file in files_to_delete:
+    os.remove(file)
 
 if (len(sys.argv) < 2):
     print(

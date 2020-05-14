@@ -2,6 +2,8 @@ import os
 from multiprocessing import Process
 from dotenv import load_dotenv
 import sys
+import schedule
+import time
 
 # load environment variables
 load_dotenv()
@@ -26,3 +28,7 @@ if __name__ == "__main__":
 
     # Setup Content Posting
     instagramBot = InstagramBot()
+
+    while 1:
+        schedule.run_pending()
+        time.sleep(1)

@@ -1,0 +1,1 @@
+UPDATE photos SET is_posted=TRUE WHERE photo_id=%s;
