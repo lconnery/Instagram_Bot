@@ -5,6 +5,6 @@ Packages require to run, download via 'pip install package-name':
     - python-dotenv
     - python-flask
     - instabot
-    - scheduler
+    - schedule
 
 Setup .env file in main directory 'Instagram_Bot'.

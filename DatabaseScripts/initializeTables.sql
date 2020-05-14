@@ -4,7 +4,8 @@ if not exists "uuid-ossp";
 CREATE TABLE captions
 (
     caption_id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-    caption VARCHAR(500) NOT NULL
+    caption VARCHAR(500) NOT NULL,
+    is_posted bool DEFAULT FALSE
 );
 
 CREATE TABLE contentSources
@@ -25,4 +26,29 @@ CREATE TABLE photos
     photo_url varchar(500) UNIQUE NOT NULL,
     content_source_id uuid NOT NULL REFERENCES contentSources (content_source_id),
     is_posted boolean DEFAULT FALSE
+);
+
+CREATE TABLE url_invalid
+(
+    photo_id uuid not null PRIMARY KEY REFERENCES photos (photo_id),
+    time_stamp TIMESTAMP DEFAULT NOW() not null,
+    issue_desc VARCHAR
+    (500) NOT NULL
+);
+
+CREATE TABLE hashtag_log
+(
+    photo_id uuid NOT NULL REFERENCES photos (photo_id),
+    hashtag_id uuid NOT NULL REFERENCES hashtags
+    (hashtag_id)
+);
+
+CREATE TABLE posts
+(
+    system_post_id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+    instagram_id varchar(200) NOT NULL,
+    time_stamp TIMESTAMP DEFAULT NOW() NOT NULL,
+    photo_id uuid NOT NULL REFERENCES photos (photo_id),
+    content_source_id uuid NOT NULL REFERENCES contentSources (content_source_id),
+    caption_id uuid NOT NULL REFERENCES captions (caption_id)
 );
