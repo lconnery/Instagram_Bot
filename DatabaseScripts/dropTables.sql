@@ -1,0 +1,14 @@
+DROP TABLE photos
+CASCADE;
+DROP TABLE captions
+CASCADE;
+DROP TABLE contentSources
+CASCADE;
+DROP TABLE hashtags
+CASCADE;
+DROP TABLE url_invalid
+CASCADE;
+DROP TABLE posts
+CASCADE;
+DROP TABLE hashtag_log
+CASCADE;
