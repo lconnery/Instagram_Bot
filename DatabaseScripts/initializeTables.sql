@@ -28,6 +28,27 @@ CREATE TABLE photos
     is_posted boolean DEFAULT FALSE
 );
 
+CREATE TABLE followers
+(
+    follower_id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+    follower_username VARCHAR(250) UNIQUE NOT NULL,
+    num_followers INTEGER NOT NULL,
+    num_following INTEGER NOT NULL,
+    public_account boolean NOT NULL
+);
+
+CREATE TABLE follower_requests
+(
+    follower_id uuid PRIMARY KEY REFERENCES followers (follower_id),
+    time_stamp TIMESTAMP DEFAULT NOW() NOT NULL
+);
+
+CREATE TABLE follower_success
+(
+    follower_id uuid PRIMARY KEY REFERENCES followers (follower_id),
+    time_stamp TIMESTAMP DEFAULT NOW() NOT NULL
+);
+
 CREATE TABLE url_invalid
 (
     photo_id uuid not null PRIMARY KEY REFERENCES photos (photo_id),

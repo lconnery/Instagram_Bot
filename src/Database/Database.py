@@ -111,6 +111,50 @@ class Database(object):
 
         return False
 
+    def insert_new_follower(self, follower_username, num_followers,
+                            num_following, is_public) -> str:
+        sql_file = open(
+            './DatabaseScripts/Insert/Followers/insertNewFollower.sql', 'r')
+        query = sql_file.read()
+        values = (follower_username, num_followers, num_following, is_public)
+
+        query_result = self.execute_query(query, values)
+
+        if (query_result):
+            follower_id = self.cursor.fetchall()
+            if (follower_id):
+                return follower_id[0]
+
+        return None
+
+    def insert_new_follower_request(self, follower_id) -> bool:
+        sql_file = open(
+            './DatabaseScripts/Insert/Followers/insertNewFollowRequest.sql',
+            'r')
+        query = sql_file.read()
+        values = (follower_id, )
+
+        query_result = self.execute_query(query, values)
+
+        if (query_result):
+            return True
+
+        return False
+
+    def insert_new_follower_success(self, follower_id) -> bool:
+        sql_file = open(
+            './DatabaseScripts/Insert/Followers/insertNewFollowSuccess.sql',
+            'r')
+        query = sql_file.read()
+        values = (follower_id, )
+
+        query_result = self.execute_query(query, values)
+
+        if (query_result):
+            return True
+
+        return False
+
     def get_content_source_id(self, content_source_username):
         sql_file = open('./DatabaseScripts/Select/selectContentSourceID.sql',
                         'r')
@@ -157,6 +201,37 @@ class Database(object):
         query_result = self.execute_query(query, values)
 
         return post_photo_info
+
+    def select_daily_follows(self, batch_size):
+        sql_file = open(
+            './DatabaseScripts/Select/Followers/selectDailyFollows.sql', 'r')
+        query = sql_file.read()
+        values = (batch_size, )
+
+        query_result = self.execute_query(query, values)
+
+        if (query_result):
+            daily_follow_info = self.cursor.fetchall()
+            if (daily_follow_info):
+                return daily_follow_info
+
+        return None
+
+    def select_past_follow_requests(self, day, month, year):
+        sql_file = open(
+            './DatabaseScripts/Select/Followers/selectFollowersFromDate.sql',
+            'r')
+        query = sql_file.read()
+        values = (year, month, day)
+
+        query_result = self.execute_query(query, values)
+
+        if (query_result):
+            past_follow_info = self.cursor.fetchall()
+            if (past_follow_info):
+                return past_follow_info
+
+        return None
 
     def select_caption(self):
         sql_file = open('./DatabaseScripts/Select/selectCaptionRand.sql', 'r')

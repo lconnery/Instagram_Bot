@@ -6,6 +6,12 @@ DROP TABLE contentSources
 CASCADE;
 DROP TABLE hashtags
 CASCADE;
+DROP TABLE followers
+CASCADE;
+DROP TABLE follower_requests
+CASCADE;
+DROP TABLE follower_success
+CASCADE;
 DROP TABLE url_invalid
 CASCADE;
 DROP TABLE posts
