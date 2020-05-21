@@ -4,12 +4,13 @@ import os
 from src.Database.Database import Database
 import urllib.request
 import schedule
-import datetime
+from datetime import datetime, timedelta
 
 
 class InstagramBot(object):
 
     database = None
+    bot = None
 
     def __init__(self):
         try:
@@ -17,11 +18,148 @@ class InstagramBot(object):
         except Exception as exception:
             print("Issue initializing database: ", exception)
 
-        self.setup_schedule()
+        self.database.insert_new_follower('@username_1', '12345', 4567, 3453,
+                                          True)
+        self.database.insert_new_follower('@username_2', '67392', 2353, 768,
+                                          True)
+        self.database.insert_new_follower('@username_3', '29837', 3532, 6856,
+                                          True)
+        self.database.insert_new_follower('@username_4', '58992', 6768, 6343,
+                                          True)
+        self.database.insert_new_follower('@username_5', '03752', 8564, 2345,
+                                          True)
+        test_1 = self.database.insert_new_follower('@username_6', '20357',
+                                                   2454, 435, True)
+        test_2 = self.database.insert_new_follower('@username_7', '17034',
+                                                   9675, 3463, True)
+        test_3 = self.database.insert_new_follower('@username_8', '09273',
+                                                   45456, 3474, True)
+        test_4 = self.database.insert_new_follower('@username_9', '49639',
+                                                   34364, 864, True)
 
-    def setup_schedule(self):
+        self.database.insert_new_follower_request(test_1)
+        self.database.insert_new_follower_request(test_2)
+        self.database.insert_new_follower_request(test_3)
+        self.database.insert_new_follower_request(test_4)
+
+        # self.bot = Bot()
+        # self.bot.login()
+
+    def setup_schedule():
+        self.start_content_posting()
+        self.start_follow_routine()
+
+    def start_follow_routine(self):
+
+        # looking back
+        num_days = os.getenv('FOLLOW_WAIT_PERIOD_IN_DAYS', 2)
+        num_days = 0
+        past_requested_users_info = self.get_past_requests_to_follow(num_days)
+
+        # get a list of the current users following the account
+        current_followers_uuid = self.get_current_followers()
+
+        num_unfollows = len(past_requested_users_info)
+        unfollow_times = self.follow_routine_schedule(num_unfollows)
+
+        # insert follow backs to follow_success in the database
+        for follower_info in past_requested_users_info:
+            follower_id = follower_info[0]
+            instagram_uuid = follower_info[1]
+
+            if (instagram_uuid in current_followers_uuid):
+                self.database.insert_new_follower_success(follower_id)
+
+            # unfollow each of the users that were requested n days ago
+            unfollow_instance = unfollow_times.pop()
+
+            schedule.every().day.at(unfollow_instance).do(
+                self.unfollow_user, instagram_uuid)
+
+        # Next Batch: Get number of follows for the day and list of users to follow
+        NUM_DAILY_FOLLOWS = int(os.getenv('NUM_DAILY_FOLLOWS', 300))
+        daily_follow_info = self.database.select_daily_follows(
+            NUM_DAILY_FOLLOWS)
+
+        # get an time at which to follow each of the users
+        follow_instances = self.follow_routine_schedule(NUM_DAILY_FOLLOWS)
+
+        # schedule a job to follow each user and record in the database that
+        # they have been requested
+        for account, instance in zip(daily_follow_info, follow_instances):
+            follower_id = account[0]
+            instagram_uuid = account[1]
+            # bot.follow(instagram_uuid)
+            schedule.every().day.at(instance).do(self.follow_user, follower_id,
+                                                 instagram_uuid)
+
+    def follow_user(self, follower_id, instagram_uuid):
+        # bot.follow(instagram_uuid)
+        self.database.insert_new_follower_request(follower_id)
+
+        return schedule.CancelJob
+
+    def unfollow_user(self, instagram_uuid):
+        # bot.unfollow(instagram_id)
+        return schedule.CancelJob
+
+    # returns [] with instagram_uuid's of current followers of the account
+    def get_current_followers(self):
+        #current_followers = self.bot.followers
+
+        #return current_followers
+        return ['@username_7', '@username_9']
+
+    def get_past_requests_to_follow(self, num_days_ago):
+        target_date = datetime.today() - timedelta(days=int(num_days_ago))
+        target_year = target_date.year
+        target_month = target_date.month
+        target_day = target_date.day
+
+        past_follow_info = self.database.select_past_follow_requests(
+            target_day, target_month, target_year)
+
+        return past_follow_info
+
+    # returns list of str in the format 'HH:MM:SS'
+    def follow_routine_schedule(self, num_instances):
+        instances = []
+        FOLLOW_PERIOD_START = os.getenv('FOLLOW_PERIOD_BEGIN', '05:00:00')
+        period_start_parts = FOLLOW_PERIOD_START.split(":")
+        hours_base = int(period_start_parts[0])
+        minute_base = int(period_start_parts[1])
+        seconds_base = int(period_start_parts[2])
+
+        FOLLOW_PERIOD_IN_SEC = int(
+            os.getenv('FOLLOW_PERIOD_LENGTH_IN_SEC', 25000))
+        for i in range(0, num_instances):
+            # generate
+            num_seconds = random.randint(0, FOLLOW_PERIOD_IN_SEC)
+            seconds_place = int(num_seconds % 60)
+            minutes_place = int((num_seconds / 60) % 60)
+            hours_place = int(((num_seconds / 60) / 60) % 60)
+
+            # add new time places to start time base
+            hours_place = hours_base + hours_place
+            if (hours_place < 10):
+                hours_place = "0" + str(hours_place)
+
+            minutes_place = minute_base + minutes_place
+            if (minutes_place < 10):
+                minutes_place = "0" + str(minutes_place)
+
+            seconds_place = seconds_base + seconds_place
+            if (seconds_place < 10):
+                seconds_place = "0" + str(seconds_place)
+
+            current_instance = str(hours_place) + ":" + str(
+                minutes_place) + ":" + str(seconds_place)
+            instances.append(current_instance)
+
+        return instances
+
+    def start_content_posting(self):
         num_posts = self.decide_num_posts()
-        print("Number of Posts: ", num_posts)
 
         post_times = []
 
@@ -80,8 +218,6 @@ class InstagramBot(object):
             schedule.every().day.at(post_time).do(self.post_photo, photo_info,
                                                   caption_info, hashtag_info)
 
-            print("Post Time: ", post_time)
-
     # number between 1 and n
     def decide_num_posts(self) -> int:
         # default number of posts a day is 3
@@ -99,12 +235,14 @@ class InstagramBot(object):
         # tuple format (photo_id, photo_url, content_source_id, content_source_username)
         post_content = self.database.get_photo_for_posting()
 
+        photo_id = ""
+        photo_url = ""
+
         if (post_content == None):
             print("Couldn't find URLs")
-            exit()
-
-        photo_id = post_content[0]
-        photo_url = post_content[1]
+        else:
+            photo_id = post_content[0]
+            photo_url = post_content[1]
 
         # attempt to download photo, if it fails get another photo and try again
         while (self.download_photo(photo_id, photo_url) == False):
@@ -185,8 +323,6 @@ class InstagramBot(object):
 
     # post photo via instabot
     def post_photo(self, photo_info, caption_info, hashtag_info):
-
-        print(datetime.datetime.now(), " begin posting photo...")
 
         photo_id = photo_info[0]
         photo_address = "./PostStaging/DailyContent/" + photo_id + ".jpg"

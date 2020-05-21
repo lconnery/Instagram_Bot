@@ -31,6 +31,7 @@ CREATE TABLE photos
 CREATE TABLE followers
 (
     follower_id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+    instagram_uuid VARCHAR(250) UNIQUE NOT NULL,
     follower_username VARCHAR(250) UNIQUE NOT NULL,
     num_followers INTEGER NOT NULL,
     num_following INTEGER NOT NULL,

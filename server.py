@@ -28,6 +28,7 @@ if __name__ == "__main__":
 
     # Setup Content Posting
     instagramBot = InstagramBot()
+    instagramBot.setup_schedule()
 
     while 1:
         schedule.run_pending()

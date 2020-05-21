@@ -111,12 +111,13 @@ class Database(object):
 
         return False
 
-    def insert_new_follower(self, follower_username, num_followers,
-                            num_following, is_public) -> str:
+    def insert_new_follower(self, instagram_uuid, follower_username,
+                            num_followers, num_following, is_public) -> str:
         sql_file = open(
             './DatabaseScripts/Insert/Followers/insertNewFollower.sql', 'r')
         query = sql_file.read()
-        values = (follower_username, num_followers, num_following, is_public)
+        values = (instagram_uuid, follower_username, num_followers,
+                  num_following, is_public)
 
         query_result = self.execute_query(query, values)
 
