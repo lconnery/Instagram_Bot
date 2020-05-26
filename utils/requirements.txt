@@ -1,0 +1,7 @@
+instaloader
+instabot
+python-dotenv
+pandas
+schedule
+sendgrid
+psycopg2-binary

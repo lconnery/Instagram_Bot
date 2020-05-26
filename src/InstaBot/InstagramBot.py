@@ -18,34 +18,13 @@ class InstagramBot(object):
         except Exception as exception:
             print("Issue initializing database: ", exception)
 
-        self.database.insert_new_follower('@username_1', '12345', 4567, 3453,
-                                          True)
-        self.database.insert_new_follower('@username_2', '67392', 2353, 768,
-                                          True)
-        self.database.insert_new_follower('@username_3', '29837', 3532, 6856,
-                                          True)
-        self.database.insert_new_follower('@username_4', '58992', 6768, 6343,
-                                          True)
-        self.database.insert_new_follower('@username_5', '03752', 8564, 2345,
-                                          True)
-        test_1 = self.database.insert_new_follower('@username_6', '20357',
-                                                   2454, 435, True)
-        test_2 = self.database.insert_new_follower('@username_7', '17034',
-                                                   9675, 3463, True)
-        test_3 = self.database.insert_new_follower('@username_8', '09273',
-                                                   45456, 3474, True)
-        test_4 = self.database.insert_new_follower('@username_9', '49639',
-                                                   34364, 864, True)
+        num_follows = int(os.getenv('NUM_DAILY_FOLLOWS', 100))
 
-        self.database.insert_new_follower_request(test_1)
-        self.database.insert_new_follower_request(test_2)
-        self.database.insert_new_follower_request(test_3)
-        self.database.insert_new_follower_request(test_4)
+        self.bot = Bot(max_follows_per_day=num_follows,
+                       max_unfollows_per_day=num_follows)
+        self.bot.login()
 
-        # self.bot = Bot()
-        # self.bot.login()
-
-    def setup_schedule():
+    def setup_schedule(self):
         self.start_content_posting()
         self.start_follow_routine()
 
@@ -89,26 +68,25 @@ class InstagramBot(object):
         for account, instance in zip(daily_follow_info, follow_instances):
             follower_id = account[0]
             instagram_uuid = account[1]
-            # bot.follow(instagram_uuid)
+            bot.follow(instagram_uuid)
             schedule.every().day.at(instance).do(self.follow_user, follower_id,
                                                  instagram_uuid)
 
     def follow_user(self, follower_id, instagram_uuid):
-        # bot.follow(instagram_uuid)
+        bot.follow(instagram_uuid)
         self.database.insert_new_follower_request(follower_id)
 
         return schedule.CancelJob
 
     def unfollow_user(self, instagram_uuid):
-        # bot.unfollow(instagram_id)
+        bot.unfollow(instagram_id)
         return schedule.CancelJob
 
     # returns [] with instagram_uuid's of current followers of the account
     def get_current_followers(self):
-        #current_followers = self.bot.followers
+        current_followers = self.bot.followers
 
-        #return current_followers
-        return ['@username_7', '@username_9']
+        return current_followers
 
     def get_past_requests_to_follow(self, num_days_ago):
         target_date = datetime.today() - timedelta(days=int(num_days_ago))
@@ -332,11 +310,9 @@ class InstagramBot(object):
         caption = caption_file.read()
 
         # instabot does its thing here
-        # bot = InstaBot()
-        # bot.login()
-        # some_id = bot.post(photo, caption)
+        some_id = bot.upload_photo(photo_address, caption)
 
-        instagram_id = "TEST_INSTAGRAM_ID"
+        instagram_id = "instagram_id (temp)"
 
         # add post information into post
         # returns the uuid for that specific post, used in hashtag_log

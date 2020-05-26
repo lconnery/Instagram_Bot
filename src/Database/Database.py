@@ -172,6 +172,37 @@ class Database(object):
 
         return None
 
+    def select_content_sources(self):
+        sql_file = open(
+            './DatabaseScripts/Select/Content/selectContentSource.sql', 'r')
+        query = sql_file.read()
+        values = None
+
+        query_result = self.execute_query(query, values)
+
+        if (query_result):
+            content_source_info = self.cursor.fetchall()
+
+            return content_source_info
+
+        return None
+
+    def select_limit_content_source_rand(self, amount):
+        sql_file = open(
+            './DatabaseScripts/Select/Content/selectContentSourceRand.sql',
+            'r')
+        query = sql_file.read()
+        values = (amount, )
+
+        query_result = self.execute_query(query, values)
+
+        if (query_result):
+            content_source_info = self.cursor.fetchall()
+
+            return content_source_info[0]
+
+        return None
+
     def get_photo_for_posting(self):
 
         # select row from photos table
@@ -276,3 +307,54 @@ class Database(object):
                 return hashtag_info
 
         return None
+
+    def getPhotoSupply(self):
+        sql_file = open('./DatabaseScripts/Metrics/getPhotoSupply.sql', 'r')
+        query = sql_file.read()
+        values = None
+
+        query_result = self.execute_query(query, values)
+
+        if (query_result):
+            supply_info = self.cursor.fetchone()
+            if (supply_info):
+                return supply_info[0]
+
+        return None
+
+    def getCaptionSupply(self):
+        sql_file = open('./DatabaseScripts/Metrics/getCaptionSupply.sql', 'r')
+        query = sql_file.read()
+        values = None
+
+        query_result = self.execute_query(query, values)
+
+        if (query_result):
+            supply_info = self.cursor.fetchone()
+            if (supply_info):
+                return supply_info[0]
+
+    def getFollowerSupply(self):
+        sql_file = open('./DatabaseScripts/Metrics/getFollowerSupply.sql', 'r')
+        query = sql_file.read()
+        values = None
+
+        query_result = self.execute_query(query, values)
+
+        if (query_result):
+            supply_info = self.cursor.fetchone()
+            if (supply_info):
+                return supply_info[0]
+
+    def getPreviousDayFollowers(self, day, month, year):
+        sql_file = open('./DatabaseScripts/Metrics/getPreviousDayFollower.sql',
+                        'r')
+        query = sql_file.read()
+        values = (year, month, day)
+
+        query_result = self.execute_query(query, values)
+
+        if (query_result):
+            supply_info = self.cursor.fetchone()
+            if (supply_info):
+                return supply_info[0]
