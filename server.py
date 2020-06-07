@@ -20,9 +20,9 @@ sys.path.append('./src/InstaLoader')
 from src.InstaLoader.content_retrieval import content_retrieval
 from src.InstaLoader.followee_retrieval import followee_retrieval
 
-FOLLOWEE_RETRIEVAL_TIME = "02:00"
-CONTENT_RETRIEVAL_TIME = "03:00"
-INSTA_BOT_SCHEDULE_TIME = "05:00"
+FOLLOWEE_RETRIEVAL_TIME = "01:00"
+CONTENT_RETRIEVAL_TIME = "04:00"
+INSTA_BOT_SCHEDULE_TIME = "09:00"
 EMAIL_DAILY_SUPPLY_EMAIL = "08:00"
 
 
